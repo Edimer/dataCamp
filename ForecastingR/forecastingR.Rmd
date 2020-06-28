@@ -42,6 +42,77 @@ knitr::opts_chunk$set(echo = TRUE,
 
 # Explorando y visualizando series de tiempo en R
 
+## Consideraciones iniciales
+
+- En R todos los datos de tipo *times series* serán manejados a través de la clase `ts`.
+- Las series de tiempo pueden ser **regularmente espaciadas** si están registradas en intervalos de tiempo iguales, por ejemplo, cada día, semana, mes, etc.
+- Es de vital importancia evidenciar comportamientos específicos de las series temporales, tales como la **tendencia**, **estacionalidad** y **ciclicidad**.
+- El objetivo fundamental del forecasting es proporcionar herramientas matemáticas válidas para hacer predicciones del futuro con base en patrones de comportamiento históricos.
+- Las predicciones en general tienen asociado grados de incertidumbre, los cuales pueden ser estudiados a través de los intervalos de predicción, cuya característica principal es que cuanto más largo sea el período de pronóstico, más amplios serán los intervalos.
+
+## Función `autoplot()`
+
+```{r}
+library(forecast)
+
+# Autoplot con facetas
+autoplot(gold, facets = TRUE)
+
+# Autoplot sin facetas
+#$autoplot(gold, facets = FALSE)
+```
+
+- Con la función `frequency()` es posible conocer la frecuencia de la serie de tiempo bajo análisis. Por ejemplo, la frecuencia de `gold` es diaria, ya que es igual a 1.
+
+```{r}
+frequency(gold)
+```
+
+## Función `ggseasonplot()`
+
+- Esta función permite visualizar patrones de comportamiento respecto a las "estaciones" sobre las cuales es medida la serie temporal.
+
+```{r, fig.width=9}
+library(fpp2)
+library(ggpubr)
+
+ggarrange(
+  autoplot(a10),
+  ggseasonplot(a10),
+  ncol = 2
+)
+```
+
+- Este gráfico puede ser obtenido en términos de coordenadas polares.
+
+```{r}
+ggseasonplot(a10, polar = TRUE)
+```
+
+## Función `ggsubseriesplot()`
+
+- Esta función permite obtener mini-diagramas para cada estación, además de graficar la línea de tendencia promedio de cada trama.
+
+```{r, fig.width=9}
+ggarrange(
+  autoplot(beer),
+  ggsubseriesplot(beer),
+  ncol = 2
+)
+
+```
+
+- La función `window()` permite extraer subconjuntos de datos de un objeto tipo `ts`
+
+```{r, fig.width=9}
+mywindow <- window(ausbeer, start = 1992)
+ggarrange(
+  autoplot(mywindow),
+  ggsubseriesplot(mywindow),
+  ncol = 2
+)
+```
+
 # Métodos de referencia y precisión en *forecast*
 
 # Suavizamiento Exponencial
