@@ -1,0 +1,32 @@
+---
+title: "Forecasting in R"
+subtitle: "Curso DataCamp - Rob Hyndman"
+author: "Edimer David Jaramillo"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: true
+    toc_float:
+      smooth_scroll: false
+      collapsed: false
+    css: estilo.css
+    theme: paper
+    highlight: breezedark
+    code_folding: hide
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      warning = FALSE,
+                      message = FALSE,
+                      fig.align = "center")
+```
+
+<center>
+<img src = "img/img1.png" />
+</center>
+
+
+
+
