@@ -179,7 +179,7 @@ autoplot(mywn)
 ggAcf(mywn)
 ```
 
-### Pruba Ljung-Box
+### Pruba [Ljung-Box](https://es.wikipedia.org/wiki/Prueba_de_Ljung-Box)
 
 - Esta prueba permite contrastar si la serie temporal es ruido blanco o no. Esto se hace bajo el siguiente juego de hipótesis:
 
