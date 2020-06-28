@@ -17,7 +17,8 @@ output:
 knitr::opts_chunk$set(echo = TRUE,
                       warning = FALSE,
                       message = FALSE,
-                      fig.align = "center")
+                      fig.align = "center",
+                      fig.width = 9)
 ```
 
 <center>
@@ -111,6 +112,92 @@ ggarrange(
   ggsubseriesplot(mywindow),
   ncol = 2
 )
+```
+
+## Patrones en series de tiempo
+
+<center>
+<img src = "img/img3.png" />
+</center>
+
+- **Tendencia:** cuando existe aumento o disminución a través del tiempo.
+- **Estacionalidad:** ocurre cuando hay un patrón regular en las series de tiempo relacionadas con el calendario, por ejemplo, patrones anuales, mesuales o semanales. Los patrones estacionales siempre poseen la misma longitud de tiempo.
+- **Ciclicidad:** ocurre cuando hay incrementos o disminuciones que no están ligadas al calendario, es decir, que no pertenecen a un período fijo.
+
+<center>
+<img src = "img/img4.png" />
+</center>
+
+- Diferencias entre **estacionalidad y ciclicidad:**
+    - Los patrones estacionales tienen longitud constante.
+    - Los patrones ciclícos tienen longitud variable.
+    - Si aparecen juntos en una misma serie temporal, la longitud del patrón ciclíco será siempre mayor que la longitud del patrón estacional.
+    - La longitud de patrones ciclícos tiende a ser más variable que la longitud de patrones estacionales.
+    - Es mucho más difícil predecir patrones ciclícos que patrones estacionales.
+    
+## Autocorrelación de series no estacionales
+
+### Función `ggLagplot()`
+
+- El diagrama de rezagos permite evidenciar la relación de la observación en el tiempo *t* con *t-1*, *t-2*...*t-n*.
+
+```{r}
+gglagplot(oil)
+```
+
+### Función `ggAcf()`
+
+- La correlación asociada con los rezagos se denomina *función de autocorrelación (ACF)*. La función `ggAcf()` permite graficar las autocorrelaciones. Las líneas que se salen de las horizontales punteadas de color azul, tienen una relación estadísticamente significativa con la observación *t*.
+
+```{r}
+ggAcf(oil)
+```
+
+## Ruido Blanco (*white noise*)
+
+- El ruido blanco como se conoce en series de tiempo, es análogo a las **variables aleatorias independientes e idénticamente distribuidas (iid)** que se abordan en el análisis estadístico.
+- En este tipo de datos no sucede nada, no hay tendencia, no hay estacionalidad, no hay ciclicidad y tampoco existe autocorrelación.
+- Es totalmente aleatorio.
+- El ruido blanco se constituye como la base de muchos modelos de pronósticos.
+- El ruido blanco es una serie temporal puramente aleatoria.
+
+### Simulando ruido blanco
+
+```{r}
+set.seed(3)
+mywn <- ts(rnorm(36))
+autoplot(mywn)
+```
+
+### Autocorrelación de ruido blanco
+
+- Como es de esperar, ninguna línea supera las punteadas azules. Por ser ruido blanco no se presenta autocorrelación.
+- Las líneas azules se basan en la distribución de la autocorrelación, suponiendo que los datos son ruido blanco (hipótesis nula).
+- Picos dentro de las líneas azules pueden ser ignorados, sin embargo, aquellos que queden por fuera podrían ser indicativos de patrones interesantes en los datos, sugiriendo que como mínimo hay ciertos comportamientos que podrían ser de utilidad para la construcción de modelos de pronóstico.
+
+```{r}
+ggAcf(mywn)
+```
+
+### Pruba Ljung-Box
+
+- Esta prueba permite contrastar si la serie temporal es ruido blanco o no. Esto se hace bajo el siguiente juego de hipótesis:
+
+$$H_0: La\ serie\ es\ ruido\ blanco\\
+H_1: La\ serie\ no\ es\ ruido\ blanco$$
+
+- Un valor p significativo indicará que existe evidencia para suponer que la serie temporal **no es ruido blanco**.
+
+```{r}
+Box.test(mywn)
+```
+
+- Como era de esperar la prueba arroja un valor p de 0.9406 para los datos simulados como ruido blanco, ya que éstos en efecto son aleatorios. 
+- Es posible aplicar la misma prueba con valores diferentes de rezago (por defecto es 15). Además, es posible diferenciar la serie (`diff()`) y aplicar la prueba.
+
+```{r}
+ggAcf(diff(goog))
+Box.test(diff(goog), lag = 10, type =  "Ljung")
 ```
 
 # Métodos de referencia y precisión en *forecast*
