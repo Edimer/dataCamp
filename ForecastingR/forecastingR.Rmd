@@ -6,9 +6,6 @@ date: "`r Sys.Date()`"
 output:
   html_document:
     toc: true
-    toc_float:
-      smooth_scroll: false
-      collapsed: false
     css: estilo.css
     theme: paper
     highlight: breezedark
@@ -27,6 +24,30 @@ knitr::opts_chunk$set(echo = TRUE,
 <img src = "img/img1.png" />
 </center>
 
+# Contenido del curso
 
+1. Explorando y visualizando series de tiempo en R.
+2. Métodos de referencia y precisión en *forecast*.
+3. Suavizamiento exponencial.
+4. Forecasting con modelos ARIMA.
+5. Métodos avanzados en *forecast*.
+
+# Libro guía
+
+- [Forecasting: Principles and Practice.](https://otexts.com/fpp3/)
+
+<center>
+<img src = "img/img2.png" />
+</center>
+
+# Explorando y visualizando series de tiempo en R
+
+# Métodos de referencia y precisión en *forecast*
+
+# Suavizamiento Exponencial
+
+# Forecast con ARIMA
+
+# Métodos avazandos
 
 
