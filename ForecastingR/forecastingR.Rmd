@@ -202,6 +202,117 @@ Box.test(diff(goog), lag = 10, type =  "Ljung")
 
 # Métodos de referencia y precisión en *forecast*
 
+## Intervalos de predicción
+
+<center>
+<img src = "img/img5.png" /> <img src = "img/img6.png" />
+</center>
+
+## Pronóstico Naive (*"ingenuo"*)
+
+- Método de pronóstico simple.
+- Utiliza como pronóstico la observación más reciente.
+- En R se pueden usar las funciones `naive()` y `snaive()`, para series no estacionales y estacionales, respectivamente. 
+
+```{r}
+# Simulando datos autoregresivos de orden 1
+set.seed(1)
+my_serie <- arima.sim(model = list(ar = 0.9), n = 24, mean = 600, sd = 48)
+
+# Naive
+my_naive <- naive(y = my_serie, h = 6)
+autoplot(my_naive)
+```
+
+- **Ejemplo de datos estacionales con `snaive()`:**
+
+```{r}
+library(fpp2) # data ausbeer
+my_snaive <- snaive(y = ausbeer, h = 10)
+autoplot(my_snaive)
+```
+
+## Residuales
+
+- Suposiciones
+    - **Esenciales:**
+        - Errores incorrelacionados.
+        - Errorres con media cero
+    - **No esenciales:**
+        - Errores con varianza constante (homocedasticidad)
+        - Errores con distribución normal
+- De no satisfacer los supuestos esenciales, nuestro modelo carece de poder predictivo, indicando que aún hay información contenida en los datos que puede ser explicada con otra alternativa de modelación.
+- Si el modelo no cumple los no esenciales se compromete la validez de los intervalos de predicción, no obstante, la estimación puntual sigue siendo válida.
+- El *ruido blanco* satisface las tres primeras suposiciones, cuando se cumplen las cuatro a este se le conoce como *ruido blanco gaussiano*.
+- La función `checkresiduals()` de la biblitoeca `forecast` permite analizar los residuales de manera fácil.
+
+### Ajustado vs Predicho
+
+```{r}
+fc <- naive(oil)
+autoplot(oil, series = "Data") + xlab("Year") +
+autolayer(fitted(fc), series = "Fitted")
+```
+
+### Analisis de residuales
+
+- **Satisface supuestos:**
+
+```{r}
+goog %>% naive() %>% checkresiduals()
+```
+
+- **No satisface supuestos:**
+
+```{r}
+ausbeer %>% snaive() %>% checkresiduals()
+```
+
+## Train - Test
+
+<center>
+<img src = "img/img7.png" />
+</center>
+
+- Validar nuestro modelo con los mismos datos que fue entrenado podría conducir al *sobreajuste*.
+- Como elemento de validación es posible particionar la serie en *train* y *test*. Con los datos de *train* se ajusta el modelo y con los datos de *test* se evalúa el desempeño predicitivo del modelo.
+
+```{r}
+training <- window(oil, end = 2003)
+test <- window(oil, start = 2004)
+fc <- naive(training, h = 10)
+autoplot(fc) + autolayer(test, series = "Test data")
+```
+
+## Métricas de error
+
+<center>
+<img src = "img/img8.png" />
+</center>
+
+- El MAPE no debe ser utilizado en series con ceros (como la temperatura) "reales" o valores pequeños, como alternativa el MASE es una mejor métrica para evaluar modelos en este tipo de series.
+
+### Función `accuracy()`
+
+- La función `accuracy()` de la biblioteca `forecast()` permite calcular varias métricas de error.
+
+```{r}
+# Data para train
+train <- subset(gold, end = 1000)
+
+# Train Naive: model 1
+naive_fc <- naive(train, h = 108)
+
+# Train mean forecast: model 2 
+mean_fc <- meanf(train, h = 108)
+
+# Accuracy model 1 vs model 2
+accuracy(naive_fc, gold)
+accuracy(mean_fc, gold)
+```
+
+## Validación cruzada
+
 # Suavizamiento Exponencial
 
 # Forecast con ARIMA
