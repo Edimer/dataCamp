@@ -63,7 +63,7 @@ autoplot(gold, facets = TRUE)
 #$autoplot(gold, facets = FALSE)
 ```
 
-- Con la función `frequency()` es posible conocer la frecuencia de la serie de tiempo bajo análisis. Por ejemplo, la frecuencia de `gold` es diaria, ya que es igual a 1.
+- Con la función `frequency()` es posible conocer la frecuencia de la serie de tiempo bajo análisis. Por ejemplo, la frecuencia de `gold` es anual, ya que es igual a 1.
 
 ```{r}
 frequency(gold)
