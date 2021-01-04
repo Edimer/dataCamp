@@ -1,4 +1,4 @@
-﻿---
+---
 title: "Introduction to Statistical Modeling in R"
 subtitle: "Curso DataCamp - Daniel Kaplan"
 author: "Edimer David Jaramillo"
@@ -27,11 +27,11 @@ knitr::opts_chunk$set(echo = TRUE,
 
 # Contenido del curso
 
-1. Explorando y visualizando series de tiempo en R.
-2. Métodos de referencia y precisión en *forecast*.
-3. Suavizamiento exponencial.
-4. Forecasting con modelos ARIMA.
-5. Métodos avanzados en *forecast*.
+1. ¿Qué es el modelado estadístico?
+2. Diseñar, entrenar y evaluar modelos
+3. Evaluación del desempeño de la predicción
+4. Explorando datos con modelos
+5. Covariables y tamaño del efecto
 
 
 
