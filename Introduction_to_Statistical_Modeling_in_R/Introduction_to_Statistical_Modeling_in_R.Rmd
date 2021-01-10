@@ -256,3 +256,140 @@ res_modelos
 mosaic::t.test(mse ~ model, data = res_modelos)
 ```
 
+# Capítulo 4
+
+## Problema de clasificación
+
+### Predicción de variables categóricas (clasificación)
+
+- Ejemplo de clasificación con `rpart` con la base de datos `Runners`.
+- La tasa de error se calcula como el promedio de las predicciones diferentes de lo real.
+
+```{r}
+# Ajustando el modelo
+mod_clas1 <- rpart(start_position ~ age + sex, cp = 0.001, data = Runners_noNA)
+
+# Evaluando el modelo
+model_output <- evaluate_model(mod_clas1, data = Runners_noNA, type = "class")
+
+# Tasa de error
+with(model_output, mean(start_position != model_output))
+```
+
+### Train - Test
+
+- Se dividen los datos en *entrenamiento* y *prueba* con las filas asignadas previamente.
+- Se ajustan tres modelos:
+  - Modelo nulo 
+  - Modelo con predictora *edad*
+  - Modelo con predictora *edad* y *género*
+- Se compara la tasa de error en el conjunto de prueba para los tres modelos. El objetivo es verificar si la inclusión de la *edad* y el *género* resulta siendo provechoso para la capacidad predictiva del modelo.
+- Aunque el parámetro de complejidad (*cp*) se puede optimizar, en este caso se utiliza el valor 0.001 para todos los modelos.
+
+```{r}
+# Creando una variable con 1 en todas las filas para el modelo nulo
+Runners_noNA$todos1 <- 1
+
+# Training y testing
+training_data <- subset(Runners_noNA, training_cases)
+testing_data <- subset(Runners_noNA, !training_cases)
+
+# Modelo nulo
+mod_nulo <- rpart(start_position ~ todos1, data = training_data, cp = 0.001)
+
+# Modelo edad 
+mod_age <- rpart(start_position ~ age, data = training_data, cp = 0.001)
+
+# Modelo edad y género
+mod_age_sex <- rpart(start_position ~ age + sex, data = training_data, cp = 0.001)
+
+# Predicción de modelos
+output_nulo <- evaluate_model(mod_nulo, data = testing_data, type = "class")
+output_age <- evaluate_model(mod_age, data = testing_data, type = "class")
+output_age_sex <- evaluate_model(mod_age_sex, data = testing_data, type = "class")
+
+# Tasa de error en testing
+error_nulo <- with(output_nulo, mean(start_position != model_output))
+error_age <- with(output_age, mean(start_position != model_output))
+error_age_sex <- with(output_age_sex, mean(start_position != model_output))
+```
+
+- **Tasas de error:**
+
+```{r, collapse=TRUE}
+cat("Tasa de error modelo nulo:", error_nulo)
+
+cat("Tasa de error modelo con edad:", error_age)
+
+cat("Tasa de error modelo con edad y género:", error_age_sex)
+```
+
+## Explorando relaciones de variables
+
+- **Datos de ejemplo:** encuesta de salud y nutrición `NHANES` (*National Health and Nutrition Evaluation Survey*) (consultar ayuda de la base de datos `?NHANES`). La base de datos tiene 10 mil filas y 76 columnas.
+
+```{r}
+# 
+library(NHANES)
+library(dplyr)
+
+# Primeras 20 variables
+names(NHANES) %>% head(20)
+```
+
+- Se construye un modelo inicial con la configuración por defecto de la función `rpart`, donde la variable respuesta es el hábito de fumar. Solo se modela en función de algunas variables del total de la base de datos. La función `prp` permite graficar un árbol de decisión bajo partición recursiva.
+
+```{r}
+library(rpart.plot)
+model <- rpart(SmokeNow ~ Poverty + MaritalStatus +
+                 Gender + BMI + TotChol + AgeFirstMarij,
+               data = NHANES)
+prp(model, type = 4, extra = 105, varlen = 0)
+```
+
+- Al aumentar la complejida del modelo a través del parámetro **`cp`** es posible obtener un árbol con mayor número de ramificaciones. Elegir entre uno u otro es posible con la medición del error en *test*.
+
+```{r, fig.width=9}
+model_complex <- rpart(SmokeNow ~ Poverty + MaritalStatus
+                       + Gender + BMI + TotChol + AgeFirstMarij,
+                       data = NHANES, cp = 0.007)
+prp(model_complex, type = 4, extra = 105, varlen = 0)
+```
+
+- **Otro ejemplo:** variables asociadas con bajo peso al nacer (base de datos `Birth_weight`).
+
+```{r}
+model_1 <- rpart(baby_wt ~ smoke + income, 
+                 data = Birth_weight)
+model_2 <- rpart(baby_wt ~ mother_age + mother_wt, 
+                 data = Birth_weight)
+
+prp(model_1, type = 3)
+```
+
+- Un modelo con más variablres predictoras:
+
+```{r}
+model_3 <- rpart(baby_wt ~ mother_age + mother_wt + smoke + income, 
+                 data = Birth_weight)
+
+prp(model_3, type = 3)
+```
+
+- Un modelo con todas las variables:
+
+
+```{r}
+model_4 <- rpart(baby_wt ~ ., data = Birth_weight)
+
+prp(model_4, type = 3)
+```
+
+- Un modelo para explicar la relación del tabaquismo con el período de gestación. Esta nomenclatura en la fórmula significa que la gestación es explicada por todas las variables excepto el peso del bebé.
+
+```{r, fig.width=9}
+model_5 <- rpart(gestation ~ . - baby_wt, data = Birth_weight)
+
+prp(model_5, type = 3)
+```
+
