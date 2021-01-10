@@ -393,3 +393,112 @@ model_5 <- rpart(gestation ~ . - baby_wt, data = Birth_weight)
 prp(model_5, type = 3)
 ```
 
+# Capítulo 5
+
+## Covariables
+
+### Precios de casas
+
+- Variables explicativas que no son de interés directo, sin embargo, juegan un papel fundamental en el sistema bajo análisis.
+- En este ejemplo se utiliza la base de datos `Houses_for_sale`.
+
+```{r}
+# Train the model price ~ fireplaces
+simple_model <- lm(price ~ fireplaces, data = Houses_for_sale)
+
+# Evaluate simple_model
+evaluate_model(simple_model)
+```
+
+- La diferencia de precio de una casa con chimenea respecto a una que no la tiene, asumiendo el modelo anterior, sería la siguiente:
+
+```{r}
+238522.7 - 171823.9	
+```
+
+
+- Otro modelo con una variable adicional:
+
+```{r}
+# Train another model including living_area
+sophisticated_model <- lm(price ~ fireplaces + living_area,
+                          data = Houses_for_sale)
+
+# Evaluate that model
+evaluate_model(sophisticated_model)
+```
+
+- Manteniendo constante la variable `living_area`, por ejemplo, en `2000`, se calcula nuevamente la diferencia de precio de una casa con chimenea y una que no la tiene. Ahora las diferencias son mucho menores, lo que sugiere que la variable `living_area` juega un papel importante en el modejo construido.
+
+```{r}
+242319.5 - 233357.1
+```
+
+## Crímenes USA 1960
+
+- Dos modelos con variables independientes:
+
+```{r}
+# Train model_1 and model_2
+model_1 <- lm(R ~ X, data = Crime)
+model_2 <- lm(R ~ W, data = Crime)
+
+# Evaluate each model...
+evaluate_model(model_1)
+evaluate_model(model_2)
+```
+
+- Calculando diferencias para dos niveles de cada variable (en cada modelo):
+
+```{r}
+change_with_X <- 106.82223 - 89.46721
+change_with_W <- 103.70777 - 68.32909
+```
+
+- Modelo con las dos variables:
+
+```{r}
+# Train model_3 using both X and W as explanatory variables
+model_3 <- lm(R ~ X + W, data = Crime)
+
+# Train model_3 using both X and W as explanatory variables
+model_3 <- lm(R ~ X + W, data = Crime)
+
+# Evaluate model_3
+evaluate_model(model_3)
+```
+
+- Calculando diferencias para los  mismos dos niveles pero manteniendo constante valores de la otra covariable. Los resultados son muy diferentes al considerar las dos variables en el mismo modelo.
+
+```{r}
+change_with_X_holding_W_constant <- 134.86434 - 41.22502
+change_with_W_holding_X_constant <- 134.86434 - 31.03422
+```
+
+## Salarios
+
+- El ejemplo está enfocado a verificar las diferencias salariales entre hombres y mujeres. La base de datos utilizada es `Trucking_jobs`. Actúan como covariables `age` (edad), `hiredyears` (años de contratación) y `title` (puesto de trabajo).
+
+```{r}
+model_1 <- lm(earnings ~ sex, data = Trucking_jobs)
+model_2 <- lm(earnings ~ sex + age, data = Trucking_jobs)
+model_3 <- lm(earnings ~ sex + hiredyears, data = Trucking_jobs)
+model_4 <- lm(earnings ~ sex + title, data = Trucking_jobs)
+model_5 <- lm(earnings ~ sex + age + hiredyears + title, data = Trucking_jobs)
+```
+
+- Evaluando los modelos con un valor fijo para las covariables:
+
+```{r}
+evaluate_model(model_1)
+evaluate_model(model_2, age = 45)
+evaluate_model(model_3, hiredyears = 3)
+evaluate_model(model_4, title = "PROGRAMMER")
+evaluate_model(model_5, age = 45, hiredyears = 3,
+               title = "PROGRAMMER")
+```
+
+## Tamaño del efecto
+
+- El tamaño del efecto es una propiedad del modelo mas no de los datos en sí mismos.
+- Para variables cuantitativas puede ser proporcionado como una tasa y para variables categóricas como una diferencia.
